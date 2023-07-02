@@ -1,6 +1,6 @@
-import {parse} from '../src/Parser.js'
+import {parse} from '../src/parser.js'
 
-const program = `42`
+const program = `'42'`
 
 const ast = parse(program)
 

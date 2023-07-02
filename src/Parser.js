@@ -1,21 +1,68 @@
-function parse(string) {
-  return parseProgram(string)
+import { init, nextToken } from "./tokenizer.js"
+
+export function parse(string) {
+  const tokenizer = init(string)
+  return parseProgram(tokenizer)
 }
 
 // Program
-//   : NumericLiteral
+//  : Literal
+//  ;
 
-function parseProgram(string) {
-  return parseNumericLiteral(string)
-}
-
-function parseNumericLiteral(string) {
+function parseProgram(tokenizer) {
   return {
-    type: "NumericLiteral",
-    value: Number(string)
+    type: "program",
+    body: parseLiteral(tokenizer),
   }
 }
 
-export {
-  parse
+function eat(token, expectType) {
+  if (token === null) {
+    throw new SyntaxError(
+      `Unexpected end of input, expected: ${expectType}`
+    )
+  }
+  if (token.type !== expectType) {
+    throw new SyntaxError(
+      `Unexpected token: ${token.value}, expected: ${expectType}`
+    )
+  }
+
+  return token
+}
+
+// Literal
+//   : NumericLiteral
+//   : StringLiteral
+//   ;
+
+function parseLiteral(toknizer) {
+  const token = nextToken(toknizer)
+  switch(token.type) {
+  case "NUMBER":
+    return parseNumericLiteral(token)
+  case "STRING":
+    return parseStringLiteral(token)
+  }
+}
+
+// StringLiteral
+//   : STRING
+//   ;
+
+function parseStringLiteral(token) {
+  return {
+    type: "StringLiteral",
+    value: token.value,
+  }
+}
+
+// NumericLiteral
+//   : NUMBER
+//   ;
+function parseNumericLiteral(token) {
+  return {
+    type: "NumericLiteral",
+    value: Number(token.value)
+  }
 }
