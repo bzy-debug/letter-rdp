@@ -1,3 +1,12 @@
+const spec = [
+  [/^\s+/, null],
+  [/^\/\/.*/, null],
+  [/\/\*[\S\s]*?\*\//, null],
+  [/^\d+/, "NUMBER"],
+  [/^"[^"]*"/, "STRING"],
+  [/^'[^']*'/, "STRING"],
+]
+
 export function init(string) {
   return {
     string,
@@ -5,53 +14,32 @@ export function init(string) {
   }
 }
 
-function peek(tokenizer) {
-  return tokenizer.string[tokenizer.cursor]
-}
-
-function advance(tokenizer) {
-  return tokenizer.string[tokenizer.cursor++]
-}
-
 function hasMoreTokens(tokenizer) {
   return tokenizer.cursor < tokenizer.string.length
-}
-
-function isNumber(c) {
-  return '0' < c && c < '9'
-}
-
-function isEOF(tokenizer) {
-  return tokenizer.cursor === tokenizer.string.length
 }
 
 export function nextToken(tokenizer) {
   if (!hasMoreTokens(tokenizer)) {
     return null
   }
+  const string = tokenizer.string.slice(tokenizer.cursor)
 
-  // Numbers
-  if (isNumber(peek(tokenizer))) {
-    let number = ''
-    while (!isEOF(tokenizer) && isNumber(peek(tokenizer))) {
-      number += advance(tokenizer)
-    }
-    return {
-      type: "NUMBER",
-      value: Number(number),
+  for (const [regex, tokenType] of spec) {
+    const match = regex.exec(string)
+    if (match !== null) {
+
+      tokenizer.cursor += match[0].length
+
+      if (tokenType === null) {
+        return nextToken(tokenizer)
+      }
+
+      return {
+        type: tokenType,
+        value: match[0],
+      }
     }
   }
 
-  if (peek(tokenizer) === '"') {
-    advance(tokenizer)
-    let string = ''
-    while(!isEOF(tokenizer) && peek(tokenizer) !== '"') {
-      string += advance(tokenizer)
-    }
-    if (peek(tokenizer) === '"') advance(tokenizer)
-    return {
-      type: "STRING",
-      value: string,
-    }
-  }
+  throw new SyntaxError(`Unexpected token: '${string[0]}'`)
 }
