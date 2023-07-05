@@ -11,7 +11,7 @@ export function parse(string) {
 
 function parseProgram(tokenizer) {
   return {
-    type: "program",
+    type: "Program",
     body: parseLiteral(tokenizer),
   }
 }
