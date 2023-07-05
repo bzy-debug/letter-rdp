@@ -1,7 +1,8 @@
 const spec = [
   [/^\s+/, null],
   [/^\/\/.*/, null],
-  [/\/\*[\S\s]*?\*\//, null],
+  [/^\/\*[\S\s]*?\*\//, null],
+  [/^;/, ';'],
   [/^\d+/, "NUMBER"],
   [/^"[^"]*"/, "STRING"],
   [/^'[^']*'/, "STRING"],
@@ -18,7 +19,7 @@ function hasMoreTokens(tokenizer) {
   return tokenizer.cursor < tokenizer.string.length
 }
 
-export function nextToken(tokenizer) {
+function next(tokenizer, willAdvance) {
   if (!hasMoreTokens(tokenizer)) {
     return null
   }
@@ -28,11 +29,12 @@ export function nextToken(tokenizer) {
     const match = regex.exec(string)
     if (match !== null) {
 
-      tokenizer.cursor += match[0].length
-
       if (tokenType === null) {
-        return nextToken(tokenizer)
+        tokenizer.cursor += match[0].length
+        return next(tokenizer, willAdvance)
       }
+
+      if (willAdvance) tokenizer.cursor += match[0].length
 
       return {
         type: tokenType,
@@ -40,6 +42,13 @@ export function nextToken(tokenizer) {
       }
     }
   }
-
   throw new SyntaxError(`Unexpected token: '${string[0]}'`)
+}
+
+export function peek(tokenizer) {
+  return next(tokenizer, false)
+}
+
+export function advance(tokenizer) {
+  return next(tokenizer, true)
 }

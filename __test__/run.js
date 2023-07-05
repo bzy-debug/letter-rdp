@@ -5,14 +5,13 @@ import assert from 'assert'
 function exec() {
 
   const program = `
-//one line comment
-
 /*
-* document comment
+ * Document comment
 */
- 'hello';
+42;
 
-  42;`
+// One line comment
+"hello";`
 
   const ast = parse(program)
 
