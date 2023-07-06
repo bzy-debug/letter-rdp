@@ -1,5 +1,46 @@
 import { init, peek, advance } from "./tokenizer.js";
 
+function createProgram(body) {
+  return {
+    type: "Program",
+    body,
+  }
+}
+
+function createEmptyStatement() {
+  return {
+    type: "EmptyStatement"
+  }
+}
+
+function createBlockStatement(body) {
+  return {
+    type: "BlockStatement",
+    body,
+  }
+}
+
+function createExpressionStatement(expression) {
+  return {
+    type: "ExpressionStatement",
+    expression,
+  }
+}
+
+function createStringLiteral(value) {
+  return {
+    type: "StringLiteral",
+    value,
+  };
+}
+
+function createNumericLiteral(value) {
+  return {
+    type: "NumericLiteral",
+    value,
+  };
+}
+
 export function parse(string) {
   const tokenizer = init(string);
   return parseProgram(tokenizer);
@@ -10,10 +51,7 @@ export function parse(string) {
 //  ;
 
 function parseProgram(tokenizer) {
-  return {
-    type: "Program",
-    body: parseStatementList(tokenizer),
-  };
+  return createProgram(parseStatementList(tokenizer));
 }
 
 // StatementList
@@ -31,15 +69,27 @@ function parseStatementList(tokenizer, stopLookahead) {
 
 // Statement
 //  : ExpressionStatement
-//  : BlockStatement
+//  | BlockStatement
+//  | EmptyStatement
+//  ;
 
 function parseStatement(tokenizer) {
   switch (peek(tokenizer).type) {
-    case "{":
-      return parseBlockStatement(tokenizer);
-    default:
-      return parseExpressionStatement(tokenizer);
+  case "{":
+    return parseBlockStatement(tokenizer);
+  case ';':
+    return parseEmptyStatement(tokenizer)
+  default:
+    return parseExpressionStatement(tokenizer);
   }
+}
+
+// EmptyStatement
+//  : ';'
+
+function parseEmptyStatement(tokenizer) {
+  eat(tokenizer, ';')
+  return createEmptyStatement()
 }
 
 // BlockStatement
@@ -50,10 +100,7 @@ function parseBlockStatement(tokenizer) {
   const body =
     peek(tokenizer).type === "}" ? [] : parseStatementList(tokenizer, "}");
   eat(tokenizer, "}");
-  return {
-    type: "BlockStatement",
-    body,
-  };
+  return createBlockStatement(body)
 }
 
 // ExpressionStatement
@@ -63,10 +110,7 @@ function parseBlockStatement(tokenizer) {
 function parseExpressionStatement(tokenizer) {
   const expression = parseExpression(tokenizer);
   eat(tokenizer, ";");
-  return {
-    type: "ExpressionStatement",
-    expression,
-  };
+  return createExpressionStatement(expression)
 }
 
 // Expression
@@ -115,10 +159,7 @@ function parseLiteral(toknizer) {
 
 function parseStringLiteral(tokenizer) {
   const token = advance(tokenizer);
-  return {
-    type: "StringLiteral",
-    value: token.value.slice(1, -1),
-  };
+  return createStringLiteral(token.value.slice(1,-1))
 }
 
 // NumericLiteral
@@ -126,8 +167,5 @@ function parseStringLiteral(tokenizer) {
 //   ;
 function parseNumericLiteral(tokenizer) {
   const token = advance(tokenizer);
-  return {
-    type: "NumericLiteral",
-    value: Number(token.value),
-  };
+  return createNumericLiteral(Number(token.value))
 }

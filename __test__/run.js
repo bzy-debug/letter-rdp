@@ -18,6 +18,8 @@ function exec() {
 {42;}
 
 {42; {"hello";}}
+
+;
 `;
 
   const ast = parse(program);
