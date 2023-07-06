@@ -1,9 +1,9 @@
-import {parse} from '../src/parser.js'
-import literalTests from './literal-test.js'
-import assert from 'assert'
+import { parse } from "../src/parser.js";
+import literalTests from "./literal-test.js";
+import blockTests from "./block-test.js";
+import assert from "assert";
 
 function exec() {
-
   const program = `
 /*
  * Document comment
@@ -11,22 +11,28 @@ function exec() {
 42;
 
 // One line comment
-"hello";`
+"hello";
 
-  const ast = parse(program)
+{}
 
-  console.log(JSON.stringify(ast, null, 2))
+{42;}
+
+{42; {"hello";}}
+`;
+
+  const ast = parse(program);
+
+  console.log(JSON.stringify(ast, null, 2));
 }
-
 
 function test(program, expected) {
-  const ast = parse(program)
-  assert.deepEqual(ast, expected)
+  const ast = parse(program);
+  assert.deepEqual(ast, expected);
 }
 
-exec()
+exec();
 
-const tests = [literalTests]
+const tests = [literalTests, blockTests];
 
-tests.forEach(testRun => testRun(test))
-console.log('All Assertions Passed!')
+tests.forEach((testRun) => testRun(test));
+console.log("All Assertions Passed!");
