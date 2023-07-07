@@ -5,23 +5,23 @@ const spec = [
   [/^;/, ';'],
   [/^{/, '{'],
   [/^}/, '}'],
-  [/^\d+/, "NUMBER"],
-  [/^"[^"]*"/, "STRING"],
-  [/^'[^']*'/, "STRING"],
+  [/^\d+/, 'NUMBER'],
+  [/^"[^"]*"/, 'STRING'],
+  [/^'[^']*'/, 'STRING']
 ]
 
-export function init(string) {
+export function init (string) {
   return {
     string,
-    cursor: 0,
+    cursor: 0
   }
 }
 
-function hasMoreTokens(tokenizer) {
+function hasMoreTokens (tokenizer) {
   return tokenizer.cursor < tokenizer.string.length
 }
 
-function next(tokenizer, willAdvance) {
+function next (tokenizer, willAdvance) {
   if (!hasMoreTokens(tokenizer)) {
     return null
   }
@@ -30,7 +30,6 @@ function next(tokenizer, willAdvance) {
   for (const [regex, tokenType] of spec) {
     const match = regex.exec(string)
     if (match !== null) {
-
       if (tokenType === null) {
         tokenizer.cursor += match[0].length
         return next(tokenizer, willAdvance)
@@ -40,17 +39,17 @@ function next(tokenizer, willAdvance) {
 
       return {
         type: tokenType,
-        value: match[0],
+        value: match[0]
       }
     }
   }
   throw new SyntaxError(`Unexpected token: '${string[0]}'`)
 }
 
-export function peek(tokenizer) {
+export function peek (tokenizer) {
   return next(tokenizer, false)
 }
 
-export function advance(tokenizer) {
+export function advance (tokenizer) {
   return next(tokenizer, true)
 }

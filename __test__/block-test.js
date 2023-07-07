@@ -1,48 +1,48 @@
 export default (test) => {
-  test(`{42;}`, {
-    type: "Program",
+  test('{42;}', {
+    type: 'Program',
     body: [
       {
-        type: "BlockStatement",
+        type: 'BlockStatement',
         body: [
           {
-            type: "ExpressionStatement",
+            type: 'ExpressionStatement',
             expression: {
-              type: "NumericLiteral",
-              value: 42,
-            },
-          },
-        ],
-      },
-    ],
-  });
-  test(`{42; {"hello";}}`, {
-    type: "Program",
+              type: 'NumericLiteral',
+              value: 42
+            }
+          }
+        ]
+      }
+    ]
+  })
+  test('{42; {"hello";}}', {
+    type: 'Program',
     body: [
       {
-        type: "BlockStatement",
+        type: 'BlockStatement',
         body: [
           {
-            type: "ExpressionStatement",
+            type: 'ExpressionStatement',
             expression: {
-              type: "NumericLiteral",
-              value: 42,
-            },
+              type: 'NumericLiteral',
+              value: 42
+            }
           },
           {
-            type: "BlockStatement",
+            type: 'BlockStatement',
             body: [
               {
-                type: "ExpressionStatement",
+                type: 'ExpressionStatement',
                 expression: {
-                  type: "StringLiteral",
-                  value: "hello",
-                },
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  });
-};
+                  type: 'StringLiteral',
+                  value: 'hello'
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  })
+}

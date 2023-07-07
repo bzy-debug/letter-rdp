@@ -1,3 +1,9 @@
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "test": "standard --fix && node __test__/run.js"
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
+  }
 }
