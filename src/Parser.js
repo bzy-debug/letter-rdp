@@ -114,10 +114,67 @@ function parseExpressionStatement (tokenizer) {
 }
 
 // Expression
-//  : Literal
+//  : AdditiveExpression
+//  ;
 
 function parseExpression (tokenizer) {
-  return parseLiteral(tokenizer)
+  return parseAdditiveExpression(tokenizer)
+}
+
+// AdditiveExression
+// : MultiplicativeExpression
+// : AdditiveExpression ('+' | '-') MultiplicativeExpression
+
+function parseAdditiveExpression (tokenizer) {
+  let left = parseMultiplicativeExpression(tokenizer)
+  while (peek(tokenizer).type === 'ADDITIVE_OPERATOR') {
+    const opeartor = eat(tokenizer, 'ADDITIVE_OPERATOR')
+    const expression = parseMultiplicativeExpression(tokenizer)
+    left = {
+      type: 'AdditiveExpression',
+      value: opeartor.value,
+      left,
+      right: expression
+    }
+  }
+  return left
+}
+
+// MultiplicativeExpression
+// : PrimaryExpression
+// | MultiplicativeExpression ('*' | '/') PrimaryExpression
+
+function parseMultiplicativeExpression (tokenizer) {
+  let left = parsePrimaryExpression(tokenizer)
+  while (peek(tokenizer).type === 'MULTIPLICATIVE_OPERATOR') {
+    const opeartor = eat(tokenizer, 'MULTIPLICATIVE_OPERATOR')
+    const expression = parsePrimaryExpression(tokenizer)
+    left = {
+      type: 'MultiplicativeExpression',
+      value: opeartor.value,
+      left,
+      right: expression
+    }
+  }
+  return left
+}
+
+// PrimaryExpression
+// : '(' Expression ')'
+// : Literal
+
+function parsePrimaryExpression (tokenizer) {
+  switch (peek(tokenizer).type) {
+    case '(': {
+      eat(tokenizer, '(')
+      const expression = parseExpression(tokenizer)
+      eat(tokenizer, ')')
+      return expression
+    }
+    default: {
+      return parseLiteral(tokenizer)
+    }
+  }
 }
 
 // Literal
